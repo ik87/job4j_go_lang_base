@@ -28,8 +28,13 @@ func (t *Tracker) GetItems() []Item {
 	return res
 }
 
-func (t *Tracker) AddItem(item Item) {
+func (t *Tracker) AddItem(item Item) (Item, error) {
+	_, ok := t.indexOf(item.ID)
+	if ok {
+		return item, fmt.Errorf("%w: %s", ErrItemExists, item.ID)
+	}
 	t.items = append(t.items, item)
+	return item, nil
 }
 
 func (t *Tracker) DelItem(uuid string) {
@@ -38,11 +43,21 @@ func (t *Tracker) DelItem(uuid string) {
 	})
 }
 
-func (t *Tracker) UpdateItem(item Item) {
-	for i := 0; i < len(t.items); i++ {
-		if item.ID == t.items[i].ID {
-			t.items[i].Name = item.Name
-			return
+func (t *Tracker) UpdateItem(item Item) error {
+	i, ok := t.indexOf(item.ID)
+	if !ok {
+		return ErrNotFound
+	}
+	t.items[i].Name = item.Name
+	return nil
+
+}
+
+func (t *Tracker) indexOf(id string) (int, bool) {
+	for i, item := range t.items {
+		if item.ID == id {
+			return i, true
 		}
 	}
+	return -1, false
 }
