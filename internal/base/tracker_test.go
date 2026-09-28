@@ -12,6 +12,7 @@ func Test_tracker(t *testing.T) {
 		t.Parallel()
 
 		tracker := NewTracker()
+
 		item := Item{
 			ID:   "1",
 			Name: "First Item",
@@ -19,10 +20,18 @@ func Test_tracker(t *testing.T) {
 		tracker.AddItem(item)
 
 		res := tracker.GetItems()
+
 		res[0].Name = "Second Item"
 
+		expected := []Item{
+			{
+				ID:   "1",
+				Name: "First Item",
+			},
+		}
+
 		assert.Equal(t,
-			[]Item{item},
+			expected,
 			tracker.GetItems(),
 		)
 	})
@@ -39,11 +48,11 @@ func Test_tracker(t *testing.T) {
 
 		item.Name = "Second Item"
 
-		expected := make([]Item, 0, 1)
-
-		expected[0] = Item{
-			ID:   "1",
-			Name: "First Item",
+		expected := []Item{
+			{
+				ID:   "1",
+				Name: "First Item",
+			},
 		}
 
 		assert.Equal(t,
